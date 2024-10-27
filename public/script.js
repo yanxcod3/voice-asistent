@@ -11,7 +11,7 @@ async function sendMessage(message, language) {
     isSpeaking = true;
     document.getElementById('status').innerText = 'AI is searching...'
 
-    const response = await fetch('/api/message', {
+    const response = await fetch('http://localhost:3000/api/message', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

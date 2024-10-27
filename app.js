@@ -32,7 +32,7 @@ function voiceAI(response, language, res) {
             return res.status(500).send('Failed to generate speech');
         }
         res.json({ 
-            audioUrl: [`https://voice-asistent.vercel.app/${fileName}`]
+            audioUrl: [`http://localhost:${PORT}/${fileName}`]
         })
         setTimeout(() => {
             if (fs.existsSync(filePath)) {
