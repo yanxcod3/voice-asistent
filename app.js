@@ -21,6 +21,10 @@ function voiceAI(response, language, res) {
     const fileName = `output${randomNumber}.mp3`;
     const filePath = path.join(__dirname, 'audio', fileName);
 
+    if (!fs.existsSync(path.join(__dirname, 'audio'))) {
+        fs.mkdirSync(path.join(__dirname, 'audio'), { recursive: true });
+    }
+
     const gtts = new gTTS(response, language);
     gtts.save(filePath, (err) => {
         if (err) {
