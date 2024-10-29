@@ -5,13 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Voice Assistant</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .volume-bar {
+            height: 25px; /* Height of the volume bar */
+            background-color: #e5e7eb; /* Background color (light gray) */
+            border-radius: 5px; /* Rounded corners */
+            overflow: hidden; /* Hide overflow */
+            position: relative; /* Positioning context for inner bar */
+        }
+        .volume-level {
+            height: 100%; /* Fill height */
+            background-color: #3b82f6; /* Fill color (blue) */
+            width: 30%; /* Initial width */
+            transition: width 0.3s ease; /* Smooth transition */
+        }
+        .volume-percentage {
+            position: absolute; /* Positioning text absolutely within the bar */
+            left: 50%; /* Center horizontally */
+            top: 50%; /* Center vertically */
+            transform: translate(-50%, -50%); /* Shift back to center */
+            color: white; /* Text color */
+            font-weight: bold; /* Bold text */
+            font-size: 14px; /* Increase font size */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Add a subtle shadow for better visibility */
+        }
+        /* CSS untuk menyembunyikan scrollbar */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center h-screen">
     <div class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md">
         <h1 class="text-2xl font-bold mb-4 text-center">AI Voice Assistant</h1>
         <canvas id="audioVisualizer" width="400" height="200"></canvas>
         <p id="status" class="text-center mt-2 text-gray-600">&nbsp;</p>
+        
+        <!-- Volume Bar -->
+        <div class="mt-4">
+            <div class="volume-bar">
+                <div id="volumeLevel" class="volume-level">
+                    <span id="volumePercentage" class="volume-percentage">volume 30%</span>
+                </div>
+            </div>
+        </div>
     </div>
+    
+    <!-- Video Modal -->
+    <div id="videoModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white rounded-lg overflow-hidden shadow-lg max-w-2xl w-full">
+            <div class="relative">
+                <video id="videoPlayer" class="w-full" controls>
+                    <source id="videoSource" src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal container -->
+    <div id="notepadModal" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg w-1/2">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center bg-gray-200 px-4 py-2 rounded-t-lg">
+                <!-- Left side with circles -->
+                <div class="flex space-x-2">
+                    <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                </div>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="p-4 flex-1 overflow-y-auto">
+                <textarea id="notepadContent" class="w-full h-64 p-2 bg-gray-100 text-base text-gray-700 focus:outline-none focus:ring-0 scrollbar-hide" readonly></textarea>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
