@@ -1,7 +1,7 @@
 let audioContext, analyser, dataArray, bufferLength;
 let recognition;
 let audioQueue = [];
-let currentTrackIndex = 0; // Indeks track yang sedang diputar
+let currentTrackIndex = 0;
 let isSpeaking = false;
 let isPlaylist = false;
 let wakeLock = null;
@@ -31,10 +31,10 @@ async function sendMessage(message, language) {
     const data = await response.json();
     audioQueue = data.audioUrl;
     if (data.response === "hay, aku disini, ada yang bisa saya bantu?") {
-        isWaitingForCommand = true; // Aktifkan mode menunggu perintah tanpa kata pemicu
+        isWaitingForCommand = true;
     }
     if (data.response === "playlist") {
-        isPlaylist = true; // Aktifkan mode menunggu perintah tanpa kata pemicu
+        isPlaylist = true;
         currentTrackIndex = 0; 
     }
     if (data.response === "video") {
@@ -55,7 +55,7 @@ function playAudio() {
     if (audioQueue.length === 0) {
         isSpeaking = false;
         if (isWaitingForCommand) {
-            startCommandTimer(); // Mulai pengatur waktu untuk menunggu perintah dari pengguna
+            startCommandTimer();
         }
         return;
     }
@@ -108,7 +108,7 @@ function playVideo(data) {
     document.getElementById('videoSource').src = data.videoUrl;
     videoPlayer.volume = volumeLevel;
     videoPlayer.load();
-    videoPlayer.play(); // Memutar video
+    videoPlayer.play();
 }
 
 async function requestWakeLock() {
@@ -153,42 +153,42 @@ function startSpeechRecognition() {
         console.log(transcript)
 
         if (transcript.match(/(atur|setting).*volume/)) {
-            const volumeMatch = transcript.match(/(\d{1,3})%?/); // Cari angka dalam perintah
+            const volumeMatch = transcript.match(/(\d{1,3})%?/);
             if (volumeMatch) {
                 const volumeValue = parseInt(volumeMatch[1], 10);
                 if (volumeValue >= 0 && volumeValue <= 100) {
-                    await setVolume(volumeValue / 100); // Ubah volume dalam skala 0-1
+                    await setVolume(volumeValue / 100);
                     console.log(`Volume diatur ke ${volumeValue}%`);
                     return;
                 }
             }
         } else if (transcript.match(/(tambahkan|naikkan|besarkan).*volume|lebih keras|increase|turn up|make it louder/)) {
-            const volumeMatch = transcript.match(/(\d{1,3})%?/); // Cari angka dalam perintah
+            const volumeMatch = transcript.match(/(\d{1,3})%?/);
             if (volumeMatch) {
                 const volumeValue = parseInt(volumeMatch[1], 10);
                 if (Math.round(volumeLevel * 100) >= volumeValue) return;
                 if (volumeValue >= 0 && volumeValue <= 100) {
-                    await setVolume(volumeValue / 100); // Ubah volume dalam skala 0-1
+                    await setVolume(volumeValue / 100);
                     console.log(`Volume diatur ke ${volumeValue}%`);
                     return;
                 }
             } else {
-                await setVolume(Math.max(volumeLevel + 0.1, 0)); // Turunkan volume 10%
+                await setVolume(Math.max(volumeLevel + 0.1, 0));
             }
             console.log(`Volume diatur ke ${volumeLevel}%`);
             return;
         } else if (transcript.match(/(kurangi|turunkan|kecilkan).*volume|lebih pelan|decrease|turn down|make it quieter/)) {
-            const volumeMatch = transcript.match(/(\d{1,3})%?/); // Cari angka dalam perintah
+            const volumeMatch = transcript.match(/(\d{1,3})%?/);
             if (volumeMatch) {
                 const volumeValue = parseInt(volumeMatch[1], 10);
                 if (Math.round(volumeLevel * 100) <= volumeValue) return;
                 if (volumeValue >= 0 && volumeValue <= 100) {
-                    await setVolume(volumeValue / 100); // Ubah volume dalam skala 0-1
+                    await setVolume(volumeValue / 100);
                     console.log(`Volume diatur ke ${volumeValue}%`);
                     return;
                 }
             } else {
-                await setVolume(Math.max(volumeLevel - 0.1, 0)); // Turunkan volume 10%
+                await setVolume(Math.max(volumeLevel - 0.1, 0));
             }
             console.log(`Volume diatur ke ${volumeLevel}%`);
             return;
@@ -218,8 +218,8 @@ function startSpeechRecognition() {
             if (transcript.match(/(tutup|close).*video/)) {
                 isSpeaking = false;
                 const videoPlayer = document.getElementById('videoPlayer');
-                videoPlayer.pause(); // Hentikan pemutaran video
-                videoPlayer.currentTime = 0; // Kembalikan ke awal
+                videoPlayer.pause();
+                videoPlayer.currentTime = 0;
                 document.getElementById('videoModal').classList.add('hidden');
                 return;
             }
@@ -236,20 +236,20 @@ function startSpeechRecognition() {
             if (isPlaylist) {
                 if (transcript.match(/(skip|lewatkan).*audio|track|lagu/)) {
                     if (currentTrackIndex < audioQueue.length - 1) {
-                        currentAudio.pause(); // Hentikan audio yang sedang diputar
-                        currentAudio.currentTime = 0; // Reset waktu pemutaran
+                        currentAudio.pause();
+                        currentAudio.currentTime = 0;
                         currentTrackIndex++;
-                        playAudio(); // Mainkan track berikutnya
+                        playAudio();
                     } else {
                         console.log('Ini adalah track terakhir.');
                     }
                     return;
                 } else if (transcript.match(/(sebelumnya|previous).*audio|track|lagu/)) {
                     if (currentTrackIndex > 0) {
-                        currentAudio.pause(); // Hentikan audio yang sedang diputar
-                        currentAudio.currentTime = 0; // Reset waktu pemutaran
+                        currentAudio.pause();
+                        currentAudio.currentTime = 0;
                         currentTrackIndex--;
-                        playAudio(); // Mainkan track sebelumnya
+                        playAudio();
                     } else {
                         console.log('Ini adalah track pertama.');
                     }
@@ -258,7 +258,7 @@ function startSpeechRecognition() {
             }
             if (['berhenti', 'stop'].some(keyword => transcript.includes(keyword))) {
                 if (document.getElementById('videoModal').classList.contains('hidden') === false) {
-                    document.getElementById('videoPlayer').pause(); // Hentikan pemutaran video
+                    document.getElementById('videoPlayer').pause();
                     return;
                 } else {
                     isSpeaking = false;
@@ -270,18 +270,18 @@ function startSpeechRecognition() {
                     audioQueue = [];
                 }
             } else if (transcript.match(/(lanjutkan).*video|lanjutkan/)) {
-                document.getElementById('videoPlayer').play(); // Hentikan pemutaran video
+                document.getElementById('videoPlayer').play();
                 return;
             } else if (transcript.match(/(atur|setting).*durasi/)) {
-                const timeMatch = transcript.match(/(\d+)(\s?(detik|menit))/); // Cari angka dan satuan waktu dalam perintah
+                const timeMatch = transcript.match(/(\d+)(\s?(detik|menit))/);
                 if (timeMatch) {
-                    let timeValue = parseInt(timeMatch[1], 10); // Ambil angka waktu
-                    const timeUnit = timeMatch[2]; // Ambil satuan waktu (detik/menit)
+                    let timeValue = parseInt(timeMatch[1], 10);
+                    const timeUnit = timeMatch[2];
                     if (timeUnit.includes('menit')) {
-                        timeValue *= 60; // Jika satuan waktu menit, konversi ke detik
+                        timeValue *= 60;
                     }
                     const videoPlayer = document.getElementById('videoPlayer');
-                    videoPlayer.currentTime = timeValue; // Atur waktu pemutaran video
+                    videoPlayer.currentTime = timeValue;
                     console.log(`Waktu video diatur ke ${timeValue} detik`);
                     return;
                 }
@@ -289,9 +289,8 @@ function startSpeechRecognition() {
             return;
         }
 
-        // Jika sedang dalam mode menunggu perintah setelah "Hay, aku di sini"
         if (isWaitingForCommand) {
-            clearTimeout(commandTimeout); // Reset timer ketika ada perintah
+            clearTimeout(commandTimeout);
             isWaitingForCommand = false;
 
             const language = detectLanguage(transcript);
@@ -306,12 +305,11 @@ function startSpeechRecognition() {
 
     recognition.onend = () => {
         if (isWaitingForCommand) {
-            // Tambahkan jeda sebelum memulai mendengarkan lagi
             setTimeout(() => {
                 recognition.start();
-            }, 4000); // Jeda 2 detik sebelum AI mulai mendengarkan lagi
+            }, 4000);
         } else {
-            recognition.start(); // Jika tidak menunggu perintah, langsung mulai lagi
+            recognition.start();
         }
     };
 
@@ -319,10 +317,9 @@ function startSpeechRecognition() {
 }
 
 function startCommandTimer() {
-    // Set waktu tunggu 3 detik setelah AI merespon
     commandTimeout = setTimeout(() => {
-        isWaitingForCommand = false; // Nonaktifkan mode menunggu perintah
-    }, 5000); // 3000 ms = 3 detik
+        isWaitingForCommand = false;
+    }, 5000);
 }
 
 function detectLanguage(transcript) {
@@ -348,7 +345,6 @@ function detectLanguage(transcript) {
     }
 }
 
-// Setup Audio Context dan Analyser
 function setupAudioContext() {
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
     analyser = audioContext.createAnalyser();
@@ -359,7 +355,7 @@ function setupAudioContext() {
 
 function setVolume(level) {
     if (currentAudio) {
-        volumeLevel = Math.max(0, Math.min(level, 1)); // Pastikan nilai antara 0 dan 1
+        volumeLevel = Math.max(0, Math.min(level, 1));
         document.getElementById('volumeLevel').style.width = Math.round(volumeLevel * 100) + '%'
         document.getElementById('volumePercentage').innerText = 'volume ' + Math.round(volumeLevel * 100) + '%'
         document.getElementById('videoPlayer').volume = volumeLevel
@@ -367,20 +363,17 @@ function setVolume(level) {
     }
 }
 
-// Fungsi untuk menggambar visualizer
 function draw() {
     const canvas = document.getElementById('audioVisualizer');
     const canvasCtx = canvas.getContext('2d');
 
-    requestAnimationFrame(draw);  // Pastikan draw terus dijalankan
-    analyser.getByteTimeDomainData(dataArray);  // Ambil data frekuensi audio
+    requestAnimationFrame(draw);
+    analyser.getByteTimeDomainData(dataArray);
 
-    // Hapus pengisian canvas atau set transparan
-    canvasCtx.clearRect(0, 0, canvas.width, canvas.height);  // Membersihkan canvas tanpa mengisi dengan warna solid
+    canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Mengatur warna dan ketebalan garis
     canvasCtx.lineWidth = 2;
-    canvasCtx.strokeStyle = 'rgb(0, 0, 0)';  // Tetap dengan warna hitam atau ubah jika diperlukan
+    canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
 
     canvasCtx.beginPath();
 
